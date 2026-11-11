@@ -1,0 +1,26 @@
+name: Refresh the amyloid atlas mirror
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"  # Monday, 06:17 UTC
+  workflow_dispatch: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # helicon's own dependencies already include pandas[html] (lxml,
+      # html5lib, bs4), which refresh.py needs for pandas.read_html
+      - run: pip install helicon
+      - run: python amyloid_atlas/refresh.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add amyloid_atlas/amyloid_atlas.json
+          git diff --cached --quiet amyloid_atlas/amyloid_atlas.json || \
+            git commit -m "Refresh the amyloid atlas mirror"
+          git push
