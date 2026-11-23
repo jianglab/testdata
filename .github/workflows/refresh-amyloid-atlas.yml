@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       # helicon's own dependencies already include pandas[html] (lxml,
       # html5lib, bs4), which refresh.py needs for pandas.read_html
       - run: pip install helicon
